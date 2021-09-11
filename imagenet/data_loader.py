@@ -3,7 +3,7 @@ import os
 import torch
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
-from folder2lmdb import ImageFolderLMDB
+#from folder2lmdb import ImageFolderLMDB
 
 
 def data_loader(root, batch_size=256, workers=1, pin_memory=True):
