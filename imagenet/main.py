@@ -75,6 +75,8 @@ parser.add_argument('--resume', default='', type=str, metavar='PATH',
                     help='path to latest checkpoitn, (default: None)')
 parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
                     help='evaluate model on validation set')
+parser.add_argument('--path', default='', type=str, metavar='PATH',
+                    help='path to imagenet dataset')
 parser.add_argument('-mark', type=str, default='', help='remark to this experiment')
 parser.add_argument('--warm', type=int, default=2, help='warm up training phase')
 parser.add_argument('-record', type=bool, default=True, help='whether to save checkpoint and events')
@@ -177,7 +179,7 @@ def train(train_loader, model, criterion, optimizer, epoch, print_freq):
             model.apply(meanweigh)#(model)
 
         n_iter = (epoch) * len(train_loader) + k
-        if n_iter==10:
+        if n_iter==-10:
             ft = os.popen('nvidia-smi --format=csv,noheader --query-compute-apps=used_gpu_memory -i '+args.gpu,'r')
             mem = ft.read()
             ft.close()
@@ -361,7 +363,7 @@ if __name__ == '__main__':
     model.cuda()
 
     # Data loading
-    train_loader, val_loader = data_loader('', args.batch_size, args.workers)
+    train_loader, val_loader = data_loader(args.path, args.batch_size, args.workers)
     # train_loader = ImagenetLoader(args.data+'/train', batch_size=args.batch_size, num_workers=args.workers)
     # train_loader=val_loader
 
