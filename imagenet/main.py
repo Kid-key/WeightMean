@@ -359,8 +359,11 @@ if __name__ == '__main__':
         #torch.distributed.init_process_group(backend='nccl',
          #                       world_size=8, rank=0)
         #model = torch.nn.parallel.DistributedDataParallel(model)
-        model = torch.nn.parallel.DataParallel(model)
-    model.cuda()
+        if args.arch.startswith('alexnet') or args.arch.startswith('vgg'):
+            model.features = torch.nn.DataParallel(model.features)
+            model.cuda()
+        else:
+            model = torch.nn.DataParallel(model).cuda()
 
     # Data loading
     train_loader, val_loader = data_loader(args.path, args.batch_size, args.workers)
