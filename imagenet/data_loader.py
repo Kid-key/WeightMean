@@ -6,7 +6,7 @@ import torchvision.datasets as datasets
 #from folder2lmdb import ImageFolderLMDB
 
 
-def data_loader(root, batch_size=256, workers=1, pin_memory=True):
+def data_loader(root, batch_size=256, workers=1, pin_memory=True, sampler=None):
     #traindir = os.path.join('/data0','%s.lmdb'%'train')
     #valdir = os.path.join('/data0','%s.lmdb'%'val')
     #valdir = '/home/data/val'
@@ -41,7 +41,8 @@ def data_loader(root, batch_size=256, workers=1, pin_memory=True):
         batch_size=batch_size,
         shuffle=True,
         num_workers=workers,
-        pin_memory=pin_memory
+        pin_memory=pin_memory,
+        sampler=sampler
     )
     val_loader = torch.utils.data.DataLoader(
         val_dataset,
