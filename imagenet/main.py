@@ -23,7 +23,7 @@ import math
 # from models import *
 from data_loader import data_loader
 from helper import AverageMeter, save_checkpoint, accuracy
-torch.multiprocessing.set_start_method('spawn')
+#torch.multiprocessing.set_start_method('spawn')
 
 
 def adjust_learning_rate(optimizer, epoch, init_lr):
@@ -356,10 +356,10 @@ if __name__ == '__main__':
     # use cuda
 
     if ',' in args.gpu:
-        torch.distributed.init_process_group(backend='nccl',
-                                world_size=8, rank=0)
-        model = torch.nn.parallel.DistributedDataParallel(model)
-        #model = torch.nn.parallel.DataParallel(model)
+        #torch.distributed.init_process_group(backend='nccl',
+         #                       world_size=8, rank=0)
+        #model = torch.nn.parallel.DistributedDataParallel(model)
+        model = torch.nn.parallel.DataParallel(model)
     model.cuda()
 
     # Data loading
