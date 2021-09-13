@@ -452,7 +452,6 @@ if __name__ == '__main__':
             #assert False
             continue
         else:
-            assert False
             # remember the best prec@1 and save checkpoint
             is_best = prec1 > best_prec1
             best_prec1 = max(prec1, best_prec1)
