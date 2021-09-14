@@ -283,14 +283,14 @@ def main():
         mp.spawn(main_worker, nprocs=n_gpu, args=(n_gpu, args))
     else:
         # Simply call main_worker function
-        main_worker(args.gpus, 1, args)
+        main_worker(args.gpu, 1, args)
 
 
 def main_worker(gpu, ngpus_per_node, args):
     global best_acc1
     args.gpu = gpu
     if args.distributed:
-        dist.init_process_group(backend=args.dist_backend, init_method=args.dist_url,
+        dist.init_process_group(backend='nccl', init_method=args.dist_url,
                                 world_size=args.world_size, rank=args.gpu)
     # create model
     if args.pretrained:
@@ -354,6 +354,7 @@ def main_worker(gpu, ngpus_per_node, args):
         args.workers = int((args.workers + ngpus_per_node - 1) / ngpus_per_node)
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
     else:
+        args.gpu = int(args.gpu)
         torch.cuda.set_device(args.gpu)
         model = model.cuda(args.gpu)
         # DataParallel will divide and allocate batch_size to all available GPUs
