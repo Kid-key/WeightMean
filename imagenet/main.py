@@ -290,7 +290,7 @@ def main():
 
 
 def main_worker(gpu, ngpus_per_node, args):
-    global best_acc1
+    global best_prec1
     args.gpu = gpu
     if args.distributed:
         dist.init_process_group(backend='nccl', init_method=args.dist_url,
