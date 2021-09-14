@@ -181,7 +181,9 @@ def train(train_loader, model, criterion, optimizer, epoch,args,warmup_scheduler
 
         n_iter = (epoch) * len(train_loader) + k
 
-        if n_iter%print_freq==1 and epoch<args.start_epoch+5:
+        if args.distributed and args.rank != 0:
+            continue
+        if n_iter%print_freq==1 and epoch<args.start_epoch+5:   
             print('Epoch: [{0}][{1}/{2}]\t'
                    'LR: {3:.5f}\t'
                       'Time {batch_time.avg:.3f}\t'
