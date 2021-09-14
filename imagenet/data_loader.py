@@ -3,11 +3,10 @@ import os
 import torch
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
-import torch.utils.data.distributed
 #from folder2lmdb import ImageFolderLMDB
 
 
-def data_loader(root, batch_size=256, workers=1, pin_memory=True, distributed=False):
+def data_sets(root):
     #traindir = os.path.join('/data0','%s.lmdb'%'train')
     #valdir = os.path.join('/data0','%s.lmdb'%'val')
     #valdir = '/home/data/val'
@@ -37,24 +36,5 @@ def data_loader(root, batch_size=256, workers=1, pin_memory=True, distributed=Fa
 
     #val_dataset=ImageFolderLMDB(valdir,val_transform)
     #print(train_dataset.__getitem__(1))
-    if distributed:
-        train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)
-    else:
-        train_sampler = None
-    
-    train_loader = torch.utils.data.DataLoader(
-        train_dataset,
-        batch_size=batch_size,
-        shuffle=(train_sampler is None),
-        num_workers=workers,
-        pin_memory=pin_memory,
-        sampler=train_sampler
-    )
-    val_loader = torch.utils.data.DataLoader(
-        val_dataset,
-        batch_size=batch_size,
-        shuffle=True,
-        num_workers=workers,
-        pin_memory=pin_memory
-    )
-    return train_loader, val_loader
+
+    return train_dataset, val_dataset
