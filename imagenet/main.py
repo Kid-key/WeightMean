@@ -251,7 +251,8 @@ def validate(val_loader, model, criterion, epoch,args):
             top5.update(prec2[0].item(), input.size(0))
 
             # measure elapsed time
-
+            if args.distributed and args.rank > 2:
+                continue
             if i % print_freq == 0:
                 print('Test: [{0}][{1}/{2}]\t'
                       'Precp@1 {top1.val:.3f} ({top1.avg:.3f})\t'
