@@ -372,7 +372,7 @@ def main_worker(gpu, ngpus_per_node, args):
     else:
         criterion = nn.CrossEntropyLoss().cuda(args.gpu)
 
-    optimizer = optim.SGD(model.parameters(), lr=args.lr * args.batch_size / 256.,
+    optimizer = optim.SGD(model.parameters(), lr=args.lr * args.batch_size*ngpus_per_node / 256.,
                           momentum=args.momentum,nesterov=False,
                           weight_decay=args.weight_decay)
     train_scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30,60,85], gamma=0.1) #learning rate decay
