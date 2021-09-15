@@ -181,7 +181,7 @@ def train(train_loader, model, criterion, optimizer, epoch,args,warmup_scheduler
 
         n_iter = (epoch) * len(train_loader) + k
 
-        if args.distributed and args.rank != 0:
+        if args.distributed and args.gpu != 0:
             continue
         if n_iter%print_freq==1 and epoch<args.start_epoch+5:   
             print('Epoch: [{0}][{1}/{2}]\t'
@@ -251,7 +251,7 @@ def validate(val_loader, model, criterion, epoch,args):
             top5.update(prec2[0].item(), input.size(0))
 
             # measure elapsed time
-            if args.distributed and args.rank > 2:
+            if args.distributed and args.gpu != 0:
                 continue
             if i % print_freq == 0:
                 print('Test: [{0}][{1}/{2}]\t'
@@ -447,7 +447,7 @@ def main_worker(gpu, ngpus_per_node, args):
         prec1 = max(precb1,precp1)
         is_best = prec1 > best_prec1
         best_prec1 = max(prec1, best_prec1)
-        if not args.distributed or (args.distributed and args.rank == 0):
+        if not args.distributed or (args.distributed and args.gpu == 0):
             if epoch > 80 and is_best:
                 # if lastepoch>0:
                 #     os.remove(checkpoint_path.format(net=args.arch, epoch=lastepoch, type='best'))
