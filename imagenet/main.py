@@ -241,8 +241,6 @@ def validate(val_loader, model, criterion, epoch,args):
             # compute output
             output = model(input)
             prec1 = accuracy(output.data, target, topk=(1, 5))
-            if i % 100 == 1:
-                print(output.mean([0])[:20])
             loss = criterion(output, target)
             prec2 = accuracy(output.data, target, topk=(1, 5))
 
@@ -253,13 +251,14 @@ def validate(val_loader, model, criterion, epoch,args):
             # measure elapsed time
             if args.distributed and args.gpu != 0:
                 continue
-            if i % print_freq == 0:
+            if i % (len(val_loader)//2) == 20:
                 print('Test: [{0}][{1}/{2}]\t'
                       'Precp@1 {top1.val:.3f} ({top1.avg:.3f})\t'
                       'Preca@1 {top5.val:.3f} ({top5.avg:.3f})'.format(epoch,
                     i, len(val_loader),  loss=losses,
                     top1=top1, top5=top5))
-
+        print(' * Accp@1 {top1.avg:.3f} Acca@1 {top5.avg:.3f}'
+              .format(top1=top1, top5=top5))
     return top1.avg, top5.avg
 
 
@@ -396,7 +395,7 @@ def main_worker(gpu, ngpus_per_node, args):
     val_loader = torch.utils.data.DataLoader(
         val_dataset,
         batch_size=args.batch_size,
-        shuffle=False,
+        shuffle=True,
         num_workers=args.workers,
         pin_memory=True
     )
