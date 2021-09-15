@@ -9,6 +9,8 @@ from datetime import datetime
 CHECKPOINT_PATH = 'checkpoint'
 LOG_DIR = 'runs'
 TIME_NOW = datetime.now().isoformat()
+checkpoint_path = os.path.join(CHECKPOINT_PATH,TIME_NOW)
+checkpoint_path_f = os.path.join(checkpoint_path, '{net}-{epoch}-{type}.pth')
 import math
 
 import torch
@@ -141,7 +143,6 @@ def train(train_loader, model, criterion, optimizer, epoch,args,warmup_scheduler
 
     # switch to train mode
     model.train()
-    #model.apply(freeze_bn)
     dslen=len(train_loader)
     end = time.time()
     for k,(input, target) in enumerate(train_loader):
@@ -200,7 +201,6 @@ def train(train_loader, model, criterion, optimizer, epoch,args,warmup_scheduler
             top5.reset()
             #validatetrain(val_loader, model, criterion)
         elif k==dslen-1:
-            model.apply(inspect_bn)
             print('Epoch: [{0}][{1}/{2}]\t'
                    'LR: {3:.5f}\t'
                       'Time {batch_time.avg:.3f}\t'
@@ -212,17 +212,6 @@ def train(train_loader, model, criterion, optimizer, epoch,args,warmup_scheduler
                     data_time=data_time, loss=losses, top1=top1, top5=top5), flush=True)
 
 
-def freeze_bn(m):
-    if isinstance(m, nn.BatchNorm1d):
-       # m.train()
-        m.track_running_stats=False
-
-def inspect_bn(m):
-    if isinstance(m, nn.BatchNorm1d):
-       # m.train()
-        print(m.running_var.data[:10])
-
-#model.apply(freeze_bn)
 def validate(val_loader, model, criterion, epoch,args):
     losses = AverageMeter()
     top1 = AverageMeter()
@@ -260,12 +249,6 @@ def validate(val_loader, model, criterion, epoch,args):
         print(' * Accp@1 {top1.avg:.3f} Acca@1 {top5.avg:.3f}'
               .format(top1=top1, top5=top5))
     return top1.avg, top5.avg
-
-
-checkpoint_path = os.path.join(CHECKPOINT_PATH,TIME_NOW)
-if not os.path.exists(checkpoint_path):
-    os.makedirs(checkpoint_path)
-checkpoint_path = os.path.join(checkpoint_path, '{net}-{epoch}-{type}.pth')
 
 
 def main():
@@ -447,10 +430,12 @@ def main_worker(gpu, ngpus_per_node, args):
         is_best = prec1 > best_prec1
         best_prec1 = max(prec1, best_prec1)
         if not args.distributed or (args.distributed and args.gpu == 0):
-            if epoch > 80 and is_best:
+            if epoch > 86 and is_best:
+                if not os.path.exists(checkpoint_path):
+                    os.makedirs(checkpoint_path)
                 # if lastepoch>0:
                 #     os.remove(checkpoint_path.format(net=args.arch, epoch=lastepoch, type='best'))
-                torch.save({'para':model.state_dict(),'opt':optimizer.state_dict()}, checkpoint_path.format(net=args.arch, epoch=epoch, type='regular'))
+                torch.save({'para':model.state_dict(),'opt':optimizer.state_dict()}, checkpoint_path_f.format(net=args.arch, epoch=epoch, type='regular'))
                 lastepoch=epoch
     print('Best Accuracy is {acc} in {epoch}'.format(acc=best_prec1,epoch=lastepoch))
 
