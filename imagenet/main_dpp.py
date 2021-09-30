@@ -417,6 +417,9 @@ def main_worker(gpu, ngpus_per_node, args):
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
+        if epoch == args.warm:
+            for group in optimizer.param_groups:
+                group['lr'] = args.lr * args.batch_size*ngpus_per_node / 256.
         if epoch >= args.warm:
             if 'cos' in args.schedular:
                 consine_learning_rate(optimizer, epoch, args.lr, T_max=args.epochs - 1)
