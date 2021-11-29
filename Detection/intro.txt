@@ -1,1 +1,2 @@
 Usethe OpenMMLab Detection Toolbox from  https://github.com/Kid-key/mmdetection.
+We add the weight mean operation for convolution layers on the train file in tools/train.py, and evaluate with Faster-rcnn and retinaNet model.
